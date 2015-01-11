@@ -64,13 +64,14 @@ def with_amount(food_property, item_list):
 def daily_set(food_property, sets):
     meals, food_combos, food_servings = sets
 
-    to_reduce = [
-        with_amount(food_property, meals),
-        with_amount(food_property, food_combos),
-        with_amount(food_property, food_servings)
-    ]
+    return reduce(
+        lambda total, per_set: total + per_set,
 
-    return reduce(lambda total, per_set: total + per_set, to_reduce)
+        map(
+            lambda s: with_amount(food_property, s),
+            sets
+        )
+    )
 
 
 def get_property(item, property_name):
