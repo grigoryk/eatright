@@ -1,4 +1,7 @@
 class WithAggregatedProperties:
+    def macro_ratio(self):
+        return macro_ratio(self.fat(), self.carbs(), self.protein())
+
     def calories(self):
         return self.get_aggregator()('calories', self.get_list())
 
@@ -22,6 +25,15 @@ class WithAggregatedProperties:
 
     def protein(self):
         return self.get_aggregator()('protein', self.get_list())
+
+
+def macro_ratio(fat, carbs, protein):
+    total = fat + carbs + protein
+    carb_perc = round((carbs / total), 3) * 100
+    fat_perc = round((fat / total), 3) * 100
+    protein_perc = round((protein / total), 3) * 100
+
+    return "{0}% / {1}% / {2}%".format(int(fat_perc), int(carb_perc), int(protein_perc))
 
 
 def basic(food_property, item_list):

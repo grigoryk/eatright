@@ -6,8 +6,8 @@ from foods.models import (
 
 class BaseWithProperties(admin.ModelAdmin):
     list_display = (
-        'calories', 'fat', 'carbs', 'protein', 'cholesterol', 'fibre',
-        'sugar', 'sodium')
+        'calories', 'fat', 'carbs', 'protein', 'macro_ratio',
+        'cholesterol', 'fibre', 'sugar', 'sodium')
 
 
 class FoodServingAdmin(BaseWithProperties):

@@ -25,6 +25,9 @@ class FoodServing(models.Model):
         else:
             return self.name
 
+    def macro_ratio(self):
+        return aggregators.macro_ratio(self.fat, self.carbs, self.protein)
+
 
 class FoodCombo(models.Model, aggregators.WithAggregatedProperties):
     name = models.CharField(max_length=255)
