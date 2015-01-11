@@ -63,6 +63,38 @@ class DayMeals(models.Model):
     class Meta:
         verbose_name_plural = 'Day meals'
 
+    def __str__(self):
+        return self.name
+
+    def calories(self):
+        return self.aggregate_combo_properties('calories')
+
+    def fat(self):
+        return self.aggregate_combo_properties('fat')
+
+    def sodium(self):
+        return self.aggregate_combo_properties('sodium')
+
+    def carbs(self):
+        return self.aggregate_combo_properties('carbs')
+
+    def fibre(self):
+        return self.aggregate_combo_properties('fibre')
+
+    def protein(self):
+        return self.aggregate_combo_properties('protein')
+
+    def aggregate_combo_properties(self, combo_property):
+        return reduce(
+            lambda total, per_combo: total + per_combo,
+
+            map(
+                lambda combo: getattr(combo, combo_property)(),
+                self.food_combos.all()
+            )
+        )
+
+
 class FoodComboHasServing(models.Model):
     food_serving = models.ForeignKey(FoodServing)
     food_combo = models.ForeignKey(FoodCombo)
