@@ -1,5 +1,7 @@
 from django.contrib import admin
-from foods.models import FoodServing, FoodCombo, FoodComboHasServing, Meal, Day
+from foods.models import (
+    FoodServing, FoodCombo, FoodComboHasServing, Meal,
+    Day, DayHasMeal, DayHasFoodServing, DayHasFoodCombo)
 
 
 class BaseWithProperties(admin.ModelAdmin):
@@ -29,8 +31,29 @@ class MealAdmin(BaseWithProperties):
     save_as = True
 
 
+class DayHasMealInline(admin.TabularInline):
+    model = DayHasMeal
+    extra = 2
+
+
+class DayHasFoodComboInline(admin.TabularInline):
+    model = DayHasFoodCombo
+    extra = 2
+
+
+class DayHasFoodServingInline(admin.TabularInline):
+    model = DayHasFoodServing
+    extra = 2
+
+
 class DayAdmin(BaseWithProperties):
     list_display = ('date',) + BaseWithProperties.list_display
+
+    inlines = [
+        DayHasMealInline,
+        DayHasFoodComboInline,
+        DayHasFoodServingInline
+    ]
 
 
 # Register your models here.
