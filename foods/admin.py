@@ -10,6 +10,7 @@ class BaseWithProperties(admin.ModelAdmin):
 
 class FoodServingAdmin(BaseWithProperties):
     list_display = ('name', 'serving_name') + BaseWithProperties.list_display
+    save_as = True
 
 
 class FoodComboHasServingInline(admin.TabularInline):
@@ -19,12 +20,13 @@ class FoodComboHasServingInline(admin.TabularInline):
 
 class FoodComboAdmin(BaseWithProperties):
     list_display = ('name',) + BaseWithProperties.list_display
-
     inlines = [FoodComboHasServingInline]
+    save_as = True
 
 
 class DayMealsAdmin(BaseWithProperties):
     list_display = ('name',) + BaseWithProperties.list_display
+    save_as = True
 
 
 # Register your models here.
