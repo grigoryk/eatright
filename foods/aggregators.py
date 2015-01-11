@@ -36,6 +36,9 @@ def basic(food_property, item_list):
 
 
 def with_amount(food_property, item_list):
+    if len(item_list) == 0:
+        return 0
+
     return reduce(
         lambda total, per_food: total + per_food,
 
