@@ -56,6 +56,13 @@ class FoodCombo(models.Model):
         )
 
 
+class DayMeals(models.Model):
+    name = models.CharField(max_length=255)
+    food_combos = models.ManyToManyField(FoodCombo)
+
+    class Meta:
+        verbose_name_plural = 'Day meals'
+
 class FoodComboHasServing(models.Model):
     food_serving = models.ForeignKey(FoodServing)
     food_combo = models.ForeignKey(FoodCombo)
