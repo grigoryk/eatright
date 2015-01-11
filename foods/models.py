@@ -13,7 +13,11 @@ class FoodServing(models.Model):
     sodium = models.FloatField()
 
     def __str__(self):
-        return self.name
+        if self.serving_name:
+            return "{0}, {1}".format(self.name, self.serving_name)
+
+        else:
+            return self.name
 
 
 class FoodCombo(models.Model):
