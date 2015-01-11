@@ -27,6 +27,24 @@ class FoodCombo(models.Model):
     def __str__(self):
         return self.name
 
+    def calories(self):
+        return self.aggregate_food_properties('calories')
+
+    def fat(self):
+        return self.aggregate_food_properties('fat')
+
+    def sodium(self):
+        return self.aggregate_food_properties('sodium')
+
+    def carbs(self):
+        return self.aggregate_food_properties('carbs')
+
+    def fibre(self):
+        return self.aggregate_food_properties('fibre')
+
+    def protein(self):
+        return self.aggregate_food_properties('protein')
+
     def aggregate_food_properties(self, food_property):
         return reduce(
             lambda total, per_food: total + per_food,
