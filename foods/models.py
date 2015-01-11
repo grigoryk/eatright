@@ -7,10 +7,13 @@ class FoodServing(models.Model):
 
     calories = models.FloatField()
     fat = models.FloatField()
+    cholesterol = models.FloatField(default=0)
+    sodium = models.FloatField()
     carbs = models.FloatField()
     fibre = models.FloatField()
+    sugar = models.FloatField()
     protein = models.FloatField()
-    sodium = models.FloatField()
+
 
     def __str__(self):
         if self.serving_name:
@@ -29,6 +32,12 @@ class FoodCombo(models.Model):
 
     def calories(self):
         return self.aggregate_food_properties('calories')
+
+    def cholesterol(self):
+        return self.aggregate_food_properties('cholesterol')
+
+    def sugar(self):
+        return self.aggregate_food_properties('sugar')
 
     def fat(self):
         return self.aggregate_food_properties('fat')
@@ -68,6 +77,12 @@ class DayMeals(models.Model):
 
     def calories(self):
         return self.aggregate_combo_properties('calories')
+
+    def cholesterol(self):
+        return self.aggregate_combo_properties('cholesterol')
+
+    def sugar(self):
+        return self.aggregate_combo_properties('sugar')
 
     def fat(self):
         return self.aggregate_combo_properties('fat')
