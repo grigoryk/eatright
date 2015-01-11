@@ -1,5 +1,5 @@
 from django.contrib import admin
-from foods.models import FoodServing, FoodCombo, FoodComboHasServing, DayMeals
+from foods.models import FoodServing, FoodCombo, FoodComboHasServing, Meal
 
 
 class BaseWithProperties(admin.ModelAdmin):
@@ -24,7 +24,7 @@ class FoodComboAdmin(BaseWithProperties):
     save_as = True
 
 
-class DayMealsAdmin(BaseWithProperties):
+class MealAdmin(BaseWithProperties):
     list_display = ('name',) + BaseWithProperties.list_display
     save_as = True
 
@@ -32,4 +32,4 @@ class DayMealsAdmin(BaseWithProperties):
 # Register your models here.
 admin.site.register(FoodServing, FoodServingAdmin)
 admin.site.register(FoodCombo, FoodComboAdmin)
-admin.site.register(DayMeals, DayMealsAdmin)
+admin.site.register(Meal, MealAdmin)
