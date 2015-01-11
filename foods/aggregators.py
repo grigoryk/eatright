@@ -24,27 +24,44 @@ class WithAggregatedProperties:
         return self.get_aggregator()('protein', self.get_list())
 
 
-def servings(food_property, serving_list):
-    return reduce(
-        lambda total, per_food: total + per_food,
-
-        map(
-            lambda combo_has_serving: getattr(combo_has_serving.food_serving, food_property) * combo_has_serving.number_of_servings,
-            serving_list
-        )
-    )
-
-
-def combos(combo_property, combo_list):
+def basic(food_property, item_list):
     return reduce(
         lambda total, per_combo: total + per_combo,
 
         map(
-            lambda combo: getattr(combo, combo_property)(),
-            combo_list
+            lambda combo: getattr(combo, food_property)(),
+            item_list
         )
     )
 
 
-def daily_set(combo_property, sets):
-    pass
+def with_amount(food_property, item_list):
+    return reduce(
+        lambda total, per_food: total + per_food,
+
+        map(
+            lambda has_serving: get_property(has_serving.item, food_property) * has_serving.amount,
+            item_list
+        )
+    )
+
+
+def daily_set(food_property, sets):
+    meals, food_combos, food_servings = sets
+
+    to_reduce = [
+        with_amount(food_property, meals),
+        with_amount(food_property, food_combos),
+        with_amount(food_property, food_servings)
+    ]
+
+    return reduce(lambda total, per_set: total + per_set, to_reduce)
+
+
+def get_property(item, property_name):
+    prop = getattr(item, property_name)
+
+    if type(prop) is float:
+        return prop
+
+    return prop()

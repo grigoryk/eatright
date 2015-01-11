@@ -34,7 +34,7 @@ class FoodCombo(models.Model, aggregators.WithAggregatedProperties):
         return self.name
 
     def get_aggregator(self):
-        return aggregators.servings
+        return aggregators.with_amount
 
     def get_list(self):
         return self.foodcombohasserving_set.all()
@@ -48,16 +48,16 @@ class Meal(models.Model, aggregators.WithAggregatedProperties):
         return self.name
 
     def get_aggregator(self):
-        return aggregators.combos
+        return aggregators.basic
 
     def get_list(self):
         return self.food_combos.all()
 
 
 class FoodComboHasServing(models.Model):
-    food_serving = models.ForeignKey(FoodServing)
     food_combo = models.ForeignKey(FoodCombo)
-    number_of_servings = models.FloatField(default=1)
+    item = models.ForeignKey(FoodServing)
+    amount = models.FloatField(default=1)
 
 
 class Day(models.Model, aggregators.WithAggregatedProperties):
@@ -69,7 +69,7 @@ class Day(models.Model, aggregators.WithAggregatedProperties):
         FoodCombo, blank=True, through="DayHasFoodCombo")
 
     def __str__(self):
-        return "Log for {0}".format(self.when)
+        return "Log for {0}".format(self.date)
 
     def get_aggregator(self):
         return aggregators.daily_set
@@ -83,18 +83,18 @@ class Day(models.Model, aggregators.WithAggregatedProperties):
 
 
 class DayHasMeal(models.Model):
-    log = models.ForeignKey(Day)
-    meal = models.ForeignKey(Meal)
-    amount = models.FloatField()
+    day = models.ForeignKey(Day)
+    item = models.ForeignKey(Meal)
+    amount = models.FloatField(default=1)
 
 
 class DayHasFoodServing(models.Model):
-    log = models.ForeignKey(Day)
-    food_serving = models.ForeignKey(FoodServing)
-    amount = models.FloatField()
+    day = models.ForeignKey(Day)
+    item = models.ForeignKey(FoodServing)
+    amount = models.FloatField(default=1)
 
 
 class DayHasFoodCombo(models.Model):
-    log = models.ForeignKey(Day)
-    food_combo = models.ForeignKey(FoodCombo)
-    amount = models.FloatField()
+    day = models.ForeignKey(Day)
+    item = models.ForeignKey(FoodCombo)
+    amount = models.FloatField(default=1)
