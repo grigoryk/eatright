@@ -5,12 +5,12 @@ class FoodServing(models.Model):
     name = models.CharField(max_length=255)
     serving_name = models.CharField(max_length=255, blank=True)
 
-    calories = models.IntegerField()
-    fat = models.IntegerField()
-    carbs = models.IntegerField()
-    fibre = models.IntegerField()
-    protein = models.IntegerField()
-    sodium = models.IntegerField()
+    calories = models.FloatField()
+    fat = models.FloatField()
+    carbs = models.FloatField()
+    fibre = models.FloatField()
+    protein = models.FloatField()
+    sodium = models.FloatField()
 
     def __str__(self):
         return self.name
