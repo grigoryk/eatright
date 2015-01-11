@@ -23,6 +23,16 @@ class FoodCombo(models.Model):
     def __str__(self):
         return self.name
 
+    def aggregate_food_properties(self, food_property):
+        return reduce(
+            lambda total, per_food: total + per_food,
+
+            map(
+                lambda combo_has_serving: getattr(combo_has_serving.food_serving, food_property) * combo_has_serving.number_of_servings,
+                self.foodcombohasserving_set.all()
+            )
+        )
+
 
 class FoodComboHasServing(models.Model):
     food_serving = models.ForeignKey(FoodServing)
