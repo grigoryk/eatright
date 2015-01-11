@@ -3,7 +3,9 @@ from foods.models import FoodServing, FoodCombo, FoodComboHasServing, DayMeals
 
 
 class BaseWithProperties(admin.ModelAdmin):
-    list_display = ('calories', 'fat', 'carbs', 'fibre', 'protein', 'sodium')
+    list_display = (
+        'calories', 'fat', 'cholesterol', 'carbs', 'fibre', 'sugar',
+        'protein', 'sodium')
 
 
 class FoodServingAdmin(BaseWithProperties):
