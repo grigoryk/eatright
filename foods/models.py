@@ -2,6 +2,8 @@ from datetime import date
 
 from django.db import models
 
+import aggregators
+
 
 class FoodServing(models.Model):
     name = models.CharField(max_length=255)
@@ -24,88 +26,32 @@ class FoodServing(models.Model):
             return self.name
 
 
-class FoodCombo(models.Model):
+class FoodCombo(models.Model, aggregators.WithAggregatedProperties):
     name = models.CharField(max_length=255)
     foods = models.ManyToManyField(FoodServing, through="FoodComboHasServing")
 
     def __str__(self):
         return self.name
 
-    def calories(self):
-        return self.aggregate_food_properties('calories')
+    def get_aggregator(self):
+        return aggregators.servings
 
-    def cholesterol(self):
-        return self.aggregate_food_properties('cholesterol')
-
-    def sugar(self):
-        return self.aggregate_food_properties('sugar')
-
-    def fat(self):
-        return self.aggregate_food_properties('fat')
-
-    def sodium(self):
-        return self.aggregate_food_properties('sodium')
-
-    def carbs(self):
-        return self.aggregate_food_properties('carbs')
-
-    def fibre(self):
-        return self.aggregate_food_properties('fibre')
-
-    def protein(self):
-        return self.aggregate_food_properties('protein')
-
-    def aggregate_food_properties(self, food_property):
-        return reduce(
-            lambda total, per_food: total + per_food,
-
-            map(
-                lambda combo_has_serving: getattr(combo_has_serving.food_serving, food_property) * combo_has_serving.number_of_servings,
-                self.foodcombohasserving_set.all()
-            )
-        )
+    def get_list(self):
+        return self.foodcombohasserving_set.all()
 
 
-class Meal(models.Model):
+class Meal(models.Model, aggregators.WithAggregatedProperties):
     name = models.CharField(max_length=255)
     food_combos = models.ManyToManyField(FoodCombo)
 
     def __str__(self):
         return self.name
 
-    def calories(self):
-        return self.aggregate_combo_properties('calories')
+    def get_aggregator(self):
+        return aggregators.combos
 
-    def cholesterol(self):
-        return self.aggregate_combo_properties('cholesterol')
-
-    def sugar(self):
-        return self.aggregate_combo_properties('sugar')
-
-    def fat(self):
-        return self.aggregate_combo_properties('fat')
-
-    def sodium(self):
-        return self.aggregate_combo_properties('sodium')
-
-    def carbs(self):
-        return self.aggregate_combo_properties('carbs')
-
-    def fibre(self):
-        return self.aggregate_combo_properties('fibre')
-
-    def protein(self):
-        return self.aggregate_combo_properties('protein')
-
-    def aggregate_combo_properties(self, combo_property):
-        return reduce(
-            lambda total, per_combo: total + per_combo,
-
-            map(
-                lambda combo: getattr(combo, combo_property)(),
-                self.food_combos.all()
-            )
-        )
+    def get_list(self):
+        return self.food_combos.all()
 
 
 class FoodComboHasServing(models.Model):
@@ -114,7 +60,7 @@ class FoodComboHasServing(models.Model):
     number_of_servings = models.FloatField(default=1)
 
 
-class Day(models.Model):
+class Day(models.Model, aggregators.WithAggregatedProperties):
     date = models.DateField(default=date.today())
     meals = models.ManyToManyField(Meal, blank=True, through="DayHasMeal")
     food_servings = models.ManyToManyField(
@@ -125,15 +71,15 @@ class Day(models.Model):
     def __str__(self):
         return "Log for {0}".format(self.when)
 
-    # def get_aggregator(self):
-    #     return day_aggregator
+    def get_aggregator(self):
+        return aggregators.daily_set
 
-    # def get_list(self):
-    #     return [
-    #         self.dayhasmeal_set.all(),
-    #         self.dayhasfoodcombo_set.all(),
-    #         self.dayhasfoodserving_set.all()
-    #     ]
+    def get_list(self):
+        return [
+            self.dayhasmeal_set.all(),
+            self.dayhasfoodcombo_set.all(),
+            self.dayhasfoodserving_set.all()
+        ]
 
 
 class DayHasMeal(models.Model):
@@ -152,4 +98,3 @@ class DayHasFoodCombo(models.Model):
     log = models.ForeignKey(Day)
     food_combo = models.ForeignKey(FoodCombo)
     amount = models.FloatField()
-
