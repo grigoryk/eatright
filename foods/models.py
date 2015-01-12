@@ -65,6 +65,7 @@ class FoodComboHasServing(models.Model):
 
 class Day(models.Model, aggregators.WithAggregatedProperties):
     date = models.DateField(default=date.today())
+    notes = models.TextField(blank=True)
     meals = models.ManyToManyField(Meal, blank=True, through="DayHasMeal")
     food_servings = models.ManyToManyField(
         FoodServing, blank=True, through="DayHasFoodServing")

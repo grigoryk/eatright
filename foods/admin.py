@@ -47,7 +47,7 @@ class DayHasFoodServingInline(admin.TabularInline):
 
 
 class DayAdmin(BaseWithProperties):
-    list_display = ('date',) + BaseWithProperties.list_display
+    list_display = ('date', 'notes') + BaseWithProperties.list_display
 
     inlines = [
         DayHasMealInline,
