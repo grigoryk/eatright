@@ -26,6 +26,9 @@ class WithAggregatedProperties:
     def protein(self):
         return self.get_aggregator()('protein', self.get_list())
 
+    def price(self):
+        return self.get_aggregator()('price', self.get_list())
+
 
 def macro_ratio(fat, carbs, protein):
     total = fat + carbs + protein
@@ -79,5 +82,8 @@ def get_property(item, property_name):
 
     if type(prop) is float:
         return prop
+
+    elif not prop:
+        return 0
 
     return prop()

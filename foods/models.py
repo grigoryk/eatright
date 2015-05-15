@@ -18,6 +18,8 @@ class FoodServing(models.Model):
     sugar = models.FloatField()
     protein = models.FloatField()
 
+    price = models.FloatField(null=True, blank=True)
+
     def __str__(self):
         if self.serving_name:
             return "{0}, {1}".format(self.name, self.serving_name)
