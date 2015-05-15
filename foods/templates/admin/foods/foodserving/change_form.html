@@ -1,0 +1,67 @@
+{% extends "admin/change_form.html" %}
+
+{% block after_field_sets %}
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+    <script>
+        var apiKey = "nsVWNobzIYpXpaWMR2cSRdmLK78ipa2IG4Ox2G7D",
+            getSearchUrl = function (query) {
+                return "http://api.nal.usda.gov/usda/ndb/search/?format=json&q=" + query + "&sort=n&max=100&offset=0&api_key=" + apiKey;
+            },
+            getFoodUrl = function (ndbno) {
+                return "http://api.nal.usda.gov/usda/ndb/reports/?ndbno=" + ndbno + "&type=f&format=json&api_key=" + apiKey;
+            },
+            $ = django.jQuery;
+
+        function Food (name, ndbno) {
+            var self = this;
+
+            self.name = ko.observable(name);
+            self.ndbno = ko.observable(ndbno);
+
+            self.download = function () {
+                $.getJSON(getFoodUrl(self.ndbno())).then(function (data) {
+                    $("#id_name").val(data.report.food.name);
+                    $("#id_serving_name").val("100 g");
+                    $("#id_calories").val(data.report.food.nutrients[1].value);
+                    $("#id_protein").val(data.report.food.nutrients[3].value);
+                    $("#id_fat").val(data.report.food.nutrients[4].value);
+                    $("#id_carbs").val(data.report.food.nutrients[6].value);
+                    $("#id_fibre").val(data.report.food.nutrients[7].value);
+                    $("#id_sugar").val(data.report.food.nutrients[8].value);
+                    $("#id_sodium").val(data.report.food.nutrients[14].value);
+                    $("#id_cholesterol").val(data.report.food.nutrients[65].value);
+                });
+            };
+        }
+
+        function FoodSearchModel () {
+            var self = this;
+
+            self.query = ko.observable();
+            self.results = ko.observableArray([]);
+
+            self.doSearch = function () {
+                $.getJSON(getSearchUrl(self.query())).then(function (data) {
+                    self.results(
+                        $.map(data.list.item, function (item) {
+                            return new Food(item.name, item.ndbno);
+                        })
+                    );
+                });
+            };
+        }
+
+        setTimeout(function () {
+            ko.applyBindings(new FoodSearchModel());
+        }, 0);
+    </script>
+    <h2>National Nutrient Database Search: <span data-bind="text: query"></span></h2>
+    <div>
+        <input type="text" data-bind="value: query">
+        <button data-bind="click: doSearch">search</button>
+
+        <ul data-bind="foreach: results, visible: results().length > 0">
+            <li><a href="" data-bind="click: download"><span data-bind="text: name"></span></a></li>
+        </ul>
+    </div>
+{% endblock %}
