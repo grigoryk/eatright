@@ -2,7 +2,7 @@ from datetime import date
 
 from django.db import models
 
-import aggregators
+from . import aggregators
 
 
 class FoodServing(models.Model):
@@ -60,13 +60,13 @@ class Meal(models.Model, aggregators.WithAggregatedProperties):
 
 
 class FoodComboHasServing(models.Model):
-    food_combo = models.ForeignKey(FoodCombo)
-    item = models.ForeignKey(FoodServing)
+    food_combo = models.ForeignKey(FoodCombo, on_delete=models.CASCADE)
+    item = models.ForeignKey(FoodServing, on_delete=models.CASCADE)
     amount = models.FloatField(default=1)
 
 
 class Day(models.Model, aggregators.WithAggregatedProperties):
-    date = models.DateField(default=date.today())
+    date = models.DateField(default=date.today)
     notes = models.TextField(blank=True)
     meals = models.ManyToManyField(Meal, blank=True, through="DayHasMeal")
     food_servings = models.ManyToManyField(
@@ -89,18 +89,18 @@ class Day(models.Model, aggregators.WithAggregatedProperties):
 
 
 class DayHasMeal(models.Model):
-    day = models.ForeignKey(Day)
-    item = models.ForeignKey(Meal)
+    day = models.ForeignKey(Day, on_delete=models.CASCADE)
+    item = models.ForeignKey(Meal, on_delete=models.CASCADE)
     amount = models.FloatField(default=1)
 
 
 class DayHasFoodServing(models.Model):
-    day = models.ForeignKey(Day)
-    item = models.ForeignKey(FoodServing)
+    day = models.ForeignKey(Day, on_delete=models.CASCADE)
+    item = models.ForeignKey(FoodServing, on_delete=models.CASCADE)
     amount = models.FloatField(default=1)
 
 
 class DayHasFoodCombo(models.Model):
-    day = models.ForeignKey(Day)
-    item = models.ForeignKey(FoodCombo)
+    day = models.ForeignKey(Day, on_delete=models.CASCADE)
+    item = models.ForeignKey(FoodCombo, on_delete=models.CASCADE)
     amount = models.FloatField(default=1)
