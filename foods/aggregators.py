@@ -1,3 +1,4 @@
+from functools import reduce
 class WithAggregatedProperties:
     def macro_ratio(self):
         return macro_ratio(self.fat(), self.carbs(), self.protein())
@@ -43,10 +44,7 @@ def basic(food_property, item_list):
     return reduce(
         lambda total, per_combo: total + per_combo,
 
-        map(
-            lambda combo: getattr(combo, food_property)(),
-            item_list
-        )
+        [getattr(combo, food_property)() for combo in item_list]
     )
 
 
@@ -57,10 +55,7 @@ def with_amount(food_property, item_list):
     return reduce(
         lambda total, per_food: total + per_food,
 
-        map(
-            lambda has_serving: get_property(has_serving.item, food_property) * has_serving.amount,
-            item_list
-        )
+        [get_property(has_serving.item, food_property) * has_serving.amount for has_serving in item_list]
     )
 
 
@@ -70,10 +65,7 @@ def daily_set(food_property, sets):
     return reduce(
         lambda total, per_set: total + per_set,
 
-        map(
-            lambda s: with_amount(food_property, s),
-            sets
-        )
+        [with_amount(food_property, s) for s in sets]
     )
 
 
