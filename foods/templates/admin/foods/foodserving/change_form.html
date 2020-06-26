@@ -21,15 +21,31 @@
             self.download = function () {
                 $.getJSON(getFoodUrl(self.ndbno())).then(function (data) {
                     $("#id_name").val(data.report.food.name);
-                    $("#id_serving_name").val("100 g");
-                    $("#id_calories").val(data.report.food.nutrients[1].value);
-                    $("#id_protein").val(data.report.food.nutrients[3].value);
-                    $("#id_fat").val(data.report.food.nutrients[4].value);
-                    $("#id_carbs").val(data.report.food.nutrients[6].value);
-                    $("#id_fibre").val(data.report.food.nutrients[7].value);
-                    $("#id_sugar").val(data.report.food.nutrients[8].value);
-                    $("#id_sodium").val(data.report.food.nutrients[14].value);
-                    $("#id_cholesterol").val(data.report.food.nutrients[65].value);
+                    $("#id_serving_name").val(
+                        `${data.report.food.nutrients[0].measures[0].label} (${data.report.food.nutrients[0].measures[0].eqv}${data.report.food.nutrients[0].measures[0].eunit})`
+                    );
+
+                    var nutrient_id_map = {
+                        "208": "calories",
+                        "203": "protein",
+                        "204": "fat",
+                        "205": "carbs",
+                        "291": "fibre",
+                        "269": "sugar",
+                        "307": "sodium",
+                        "601": "cholesterol"
+                    };
+
+                    // just in case foods don't have every nutrient listed, clear out fields
+                    for (let [_, value] of Object.entries(nutrient_id_map)) {
+                        $("#id_" + value).val("");
+                    }
+
+                    for (var nutrient of data.report.food.nutrients) {
+                        if (nutrient.nutrient_id in nutrient_id_map) {
+                            $("#id_" + nutrient_id_map[nutrient.nutrient_id]).val(nutrient.value);
+                        }
+                    }
                 });
             };
         }
