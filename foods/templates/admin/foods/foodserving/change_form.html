@@ -5,25 +5,23 @@
     <script>
         var apiKey = "nsVWNobzIYpXpaWMR2cSRdmLK78ipa2IG4Ox2G7D",
             getSearchUrl = function (query) {
-                return "http://api.nal.usda.gov/usda/ndb/search/?format=json&q=" + query + "&sort=n&max=100&offset=0&api_key=" + apiKey;
+                return "https://api.nal.usda.gov/fdc/v1/foods/search/?query=" + query + "&api_key=" + apiKey;
             },
-            getFoodUrl = function (ndbno) {
-                return "http://api.nal.usda.gov/usda/ndb/reports/?ndbno=" + ndbno + "&type=f&format=json&api_key=" + apiKey;
+            getFoodUrl = function (fdcId) {
+                return "https://api.nal.usda.gov/fdc/v1/food/" + fdcId + "?api_key=" + apiKey;
             },
             $ = django.jQuery;
 
-        function Food (name, ndbno) {
+        function Food (name, fdcId) {
             var self = this;
 
             self.name = ko.observable(name);
-            self.ndbno = ko.observable(ndbno);
+            self.fdcId = ko.observable(fdcId);
 
             self.download = function () {
-                $.getJSON(getFoodUrl(self.ndbno())).then(function (data) {
-                    $("#id_name").val(data.report.food.name);
-                    $("#id_serving_name").val(
-                        `${data.report.food.nutrients[0].measures[0].label} (${data.report.food.nutrients[0].measures[0].eqv}${data.report.food.nutrients[0].measures[0].eunit})`
-                    );
+                $.getJSON(getFoodUrl(self.fdcId())).then(function (data) {
+                    $("#id_name").val(data.description);
+                    $("#id_serving_name").val(`${data.servingSize} ${data.servingSizeUnit}`);
 
                     var nutrient_id_map = {
                         "208": "calories",
@@ -41,9 +39,9 @@
                         $("#id_" + value).val("");
                     }
 
-                    for (var nutrient of data.report.food.nutrients) {
-                        if (nutrient.nutrient_id in nutrient_id_map) {
-                            $("#id_" + nutrient_id_map[nutrient.nutrient_id]).val(nutrient.value);
+                    for (var nutrient of data.foodNutrients) {
+                        if (nutrient.nutrient.number in nutrient_id_map) {
+                            $("#id_" + nutrient_id_map[nutrient.nutrient.number]).val(nutrient.amount);
                         }
                     }
                 });
@@ -59,8 +57,12 @@
             self.doSearch = function () {
                 $.getJSON(getSearchUrl(self.query())).then(function (data) {
                     self.results(
-                        $.map(data.list.item, function (item) {
-                            return new Food(item.name, item.ndbno);
+                        $.map(data.foods, function (item) {
+                            if (item.brandName) {
+                                return new Food(item.description + " (" + item.brandName + ")", item.fdcId);
+                            } else {
+                                return new Food(item.description, item.fdcId);
+                            }
                         })
                     );
                 });
